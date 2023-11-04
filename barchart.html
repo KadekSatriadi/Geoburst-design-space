@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Country Data in CSV Format</title>
+</head>
+<body>
+    <div id="country-data"></div>
+    <button id="download-csv">Download CSV</button>
+
+    <script>
+        // Define the URL of the REST Countries API endpoint
+        const apiUrl = "https://restcountries.com/v3/all";
+
+        // Fetch country data
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const countryData = document.getElementById("country-data");
+                const downloadButton = document.getElementById("download-csv");
+
+                // Initialize a string to store the CSV data
+                let csvData = "Country,Population,Capital,Region\n";
+
+                data.forEach(country => {
+                    const { name, population, capital, region } = country;
+                    csvData += `"${name.common}",${population},"${capital}","${region}"\n`;
+                });
+
+                // Display the data on the web page
+                countryData.innerText = csvData;
+
+                // Enable CSV download
+                downloadButton.addEventListener("click", () => {
+                    const blob = new Blob([csvData], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "country_data.csv";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            })
+            .catch(error => console.error("Error fetching data: ", error));
+    </script>
+</body>
+</html>
